@@ -32,7 +32,17 @@ async function run() {
       const result = await classCollection.find().toArray();
       res.send(result);
     });
-    // class post
+    // carts get
+    app.get("/carts", async (req, res) => {
+      const email = req.query.email;
+      if (!email) {
+        res.send([]);
+      }
+      const query = { email: email };
+      const result = await cartsCollection.find(query).toArray();
+      res.send(result);
+    });
+    // carts post
     app.post("/carts", async (req, res) => {
       const item = req.body;
       console.log(item);
