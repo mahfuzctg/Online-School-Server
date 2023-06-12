@@ -27,15 +27,16 @@ async function run() {
     //
     // classes
     const classCollection = client.db("onlineDb").collection("classes");
+    const cartsCollection = client.db("onlineDb").collection("carts");
     app.get("/classes", async (req, res) => {
       const result = await classCollection.find().toArray();
       res.send(result);
     });
     // class post
-    app.post("/classes", async (req, res) => {
+    app.post("/carts", async (req, res) => {
       const item = req.body;
       console.log(item);
-      const result = await classCollection.insertOne(item);
+      const result = await cartsCollection.insertOne(item);
       res.send(result);
     });
     // instructors
