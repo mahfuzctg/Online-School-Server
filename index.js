@@ -31,6 +31,13 @@ async function run() {
       const result = await classCollection.find().toArray();
       res.send(result);
     });
+    // class post
+    app.post("/classes", async (req, res) => {
+      const item = req.body;
+      console.log(item);
+      const result = await classCollection.insertOne(item);
+      res.send(result);
+    });
     // instructors
     const instructorsCollection = client
       .db("onlineDb")
