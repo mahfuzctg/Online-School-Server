@@ -44,7 +44,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     //
     // classes
     const classCollection = client.db("onlineDb").collection("classes");
@@ -83,6 +83,14 @@ async function run() {
       const result = await cartsCollection.deleteOne(query);
       res.send(result);
     });
+    // users delete
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // instructors
     const instructorsCollection = client
       .db("onlineDb")
@@ -93,7 +101,7 @@ async function run() {
       res.send(result);
     });
     // user get
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifyJWT, async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
@@ -111,17 +119,21 @@ async function run() {
       res.send(result);
     });
     //
-    app.get("users/admin/:email", verifyJWT, async (req, res) => {
+
+    // admin get
+    app.get("/users/admin/:email", verifyJWT, async (req, res) => {
       const email = req.params.email;
+
       if (req.decoded.email !== email) {
         res.send({ admin: false });
       }
+
       const query = { email: email };
       const user = await usersCollection.findOne(query);
       const result = { admin: user?.role === "admin" };
       res.send(result);
     });
-    // admin
+    //  admin patch
     app.patch("/users/admin/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -133,6 +145,31 @@ async function run() {
       const result = await usersCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+    // Instructor role------
+    app.patch("/users/instructors/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: "instructors",
+        },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+    app.get("/users/instructors/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+
+      if (req.decoded.email !== email) {
+        res.send({ instructors: false });
+      }
+
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      const result = { instructors: user?.role === "instructors" };
+      res.send(result);
+    });
+
     // jwt
     app.post("/jwt", (req, res) => {
       const user = req.body;
@@ -141,6 +178,18 @@ async function run() {
       });
       res.send({ token });
     });
+    // // Admin verify
+    // const adminVerify = async (req, res, next) => {
+    //   const email = req.decoded.email;
+    //   const query = { email: email };
+    //   const result = await usersCollection.findOne(query);
+    //   if (user?.role !== "admin") {
+    //     return res
+    //       .status(403)
+    //       .send({ error: true, message: "unauthorized access" });
+    //   }
+    //   next();
+    // };
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
