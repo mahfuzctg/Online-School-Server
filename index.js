@@ -68,7 +68,9 @@ async function run() {
     // user
     app.post("/users", async (req, res) => {
       const user = req.body;
-      const result = await usersCollection.find().toArray();
+      const query = { email: user.email };
+      const existingUser = await usersCollection.findOne(query);
+      const result = await usersCollection.insertOne(existingUser);
       res.send(result);
     });
     // Send a ping to confirm a successful connection
