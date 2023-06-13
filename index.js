@@ -63,7 +63,7 @@ async function run() {
       .collection("instructors");
 
     app.get("/instructors", async (req, res) => {
-      const result = await instructorsCollection.fnd().toArray();
+      const result = await instructorsCollection.find().toArray();
       res.send(result);
     });
     // user get
@@ -83,6 +83,11 @@ async function run() {
       }
       const result = await usersCollection.insertOne(user);
       res.send(result);
+    });
+    // admin
+    app.patch("users/admin/:id", (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
     });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
