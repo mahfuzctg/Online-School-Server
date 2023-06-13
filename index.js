@@ -61,19 +61,27 @@ async function run() {
     const instructorsCollection = client
       .db("onlineDb")
       .collection("instructors");
+
     app.get("/instructors", async (req, res) => {
-      const result = await instructorsCollection.find().toArray();
+      const result = await instructorsCollection.fnd().toArray();
       res.send(result);
     });
-    // user
+    // user get
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+    // user post
     app.post("/users", async (req, res) => {
       const user = req.body;
-      const query = { email: user.email };
+      console.log(user);
+      const query = { email: user?.email };
       const existingUser = await usersCollection.findOne(query);
+      console.log(existingUser);
       if (existingUser) {
-        res.send({ message: "user already exits" });
+        return res.send({ message: "user already exits" });
       }
-      const result = await usersCollection.insertOne(existingUser);
+      const result = await usersCollection.insertOne(user);
       res.send(result);
     });
     // Send a ping to confirm a successful connection
