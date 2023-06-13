@@ -70,6 +70,9 @@ async function run() {
       const user = req.body;
       const query = { email: user.email };
       const existingUser = await usersCollection.findOne(query);
+      if (existingUser) {
+        res.send({ message: "user already exits" });
+      }
       const result = await usersCollection.insertOne(existingUser);
       res.send(result);
     });
