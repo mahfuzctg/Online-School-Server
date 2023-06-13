@@ -28,6 +28,7 @@ async function run() {
     // classes
     const classCollection = client.db("onlineDb").collection("classes");
     const cartsCollection = client.db("onlineDb").collection("carts");
+    const usersCollection = client.db("onlineDb").collection("users");
     app.get("/classes", async (req, res) => {
       const result = await classCollection.find().toArray();
       res.send(result);
@@ -64,11 +65,18 @@ async function run() {
       const result = await instructorsCollection.find().toArray();
       res.send(result);
     });
+    // user
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
+    // user get
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
